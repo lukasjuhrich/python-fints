@@ -2,6 +2,7 @@ import base64
 import inspect
 import json
 import re
+import os
 import zlib
 from contextlib import contextmanager
 from datetime import datetime
@@ -10,6 +11,9 @@ from enum import Enum
 import mt940
 
 from .models import Holding
+
+
+DISABLE_DOC_HACK = bool(os.getenv('FINTS_DISABLE_DOC_HACK'))
 
 
 def mt940_to_array(data):
@@ -276,6 +280,8 @@ class RepresentableEnum(Enum):
 
         # Hack alert: Try to parse the docstring from the enum source, if available. Fail softly.
         # FIXME Needs test
+        if DISABLE_DOC_HACK:
+            return
         try:
             val_1 = val_2 = repr(args[0])
             if val_1.startswith("'"):
